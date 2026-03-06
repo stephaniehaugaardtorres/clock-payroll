@@ -1,4 +1,7 @@
 GPS Workforce Time Tracker:
+## Application Preview
+
+![App Screenshot] (assets/screenshot.png)
 
 A React web application that allows employees to clock in and out using GPS verification, automatically track work sessions, and estimate payroll based on recorded hours.
 
