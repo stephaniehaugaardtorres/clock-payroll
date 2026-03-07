@@ -3,6 +3,7 @@ import { getCurrentPosition } from "../lib/geolocation";
 import { distanceMeters } from "../lib/distance";
 import { loadPunches, savePunches, loadPaySettings, savePaySettings } from "../lib/storage";
 import { calculateWorkTime, buildSessions } from "../lib/payroll";
+import "./Dashboard.css";
 
 const WORKSITE = {
   name: import.meta.env.VITE_WORKSITE_NAME || "Worksite",
@@ -169,73 +170,72 @@ const canClockInFromBreak = breakRemainingMs === 0;
   }
 
   return (
-    <div style={{ padding: 20, fontFamily: "system-ui", maxWidth: 820 }}>
-      <h1>Dashboard</h1>
+  <div className="dashboard">
+    <h1>GPS Workforce Time Tracker</h1>
+    <p className="dashboard-subtitle">
+      Employee clock-in and clock-out with GPS validation, break enforcement,
+      timesheet tracking, and payroll estimation.
+    </p>
 
-      <p style={{ opacity: 0.85 }}>
-        Worksite: <b>{WORKSITE.name}</b> • Radius: <b>{WORKSITE.radiusMeters}m</b>{" "}
-        • Max accuracy: <b>{WORKSITE.maxAccuracyMeters}m</b>
+    <div className="section">
+      <p className="info-bar">
+        <b>Worksite:</b> {WORKSITE.name} • <b>Radius:</b> {WORKSITE.radiusMeters}m •{" "}
+        <b>Max accuracy:</b> {WORKSITE.maxAccuracyMeters}m
       </p>
 
-     <div style={{ display: "flex", gap: 10, marginBottom: 15, flexWrap: "wrap" }}>
-  <button
-  onClick={clockIn}
-  disabled={
-    busy ||
-    isClockedIn ||
-    (lastPunch?.type === "OUT" && !canClockInFromBreak)
-  }
->
-  {busy
-    ? "Checking GPS…"
-    : isClockedIn
-    ? "Clocked In"
-    : lastPunch?.type === "OUT" && !canClockInFromBreak
-    ? `Break (${Math.ceil(breakRemainingMs / 60000)}m left)`
-    : "Clock In (GPS)"}
-</button>
+      <div className="button-row">
+        <button
+          onClick={clockIn}
+          disabled={
+            busy ||
+            isClockedIn ||
+            (lastPunch?.type === "OUT" && !canClockInFromBreak)
+          }
+        >
+          {busy
+            ? "Checking GPS…"
+            : isClockedIn
+            ? "Clocked In"
+            : lastPunch?.type === "OUT" && !canClockInFromBreak
+            ? `Break (${Math.ceil(breakRemainingMs / 60000)}m left)`
+            : "Clock In (GPS)"}
+        </button>
 
-  <button onClick={clockOut} disabled={busy || !isClockedIn}>
-    Clock Out
-  </button>
+        <button onClick={clockOut} disabled={busy || !isClockedIn}>
+          Clock Out
+        </button>
 
-  <button onClick={resetDemo}>
-    Reset Demo
-  </button>
-</div>
-{lastPunch?.type === "OUT" && breakRemainingMs > 0 && (
-  <p style={{ marginTop: 6, opacity: 0.85 }}>
-    Break remaining: <b>{Math.ceil(breakRemainingMs / 60000)} min</b>
-  </p>
-)}
+        <button onClick={resetDemo}>
+          Reset Demo
+        </button>
+      </div>
 
-      <p>
+      {lastPunch?.type === "OUT" && breakRemainingMs > 0 && (
+        <p className="break-text">
+          Break remaining: <b>{Math.ceil(breakRemainingMs / 60000)} min</b>
+        </p>
+      )}
+
+      <p className="status-text">
         <b>Status:</b> {status}
       </p>
 
       {error && (
-        <p style={{ color: "crimson" }}>
+        <p className="error-text">
           <b>Error:</b> {error}
         </p>
       )}
+    </div>
 
       {lastReading && (
-        <div style={{ marginTop: 14 }}>
+        <div className="section">
           <h3>Last GPS Reading</h3>
-          <pre
-            style={{
-              background: "#111",
-              color: "#0f0",
-              padding: 12,
-              borderRadius: 10,
-              overflowX: "auto",
-            }}
-          >
+          <pre>
             {JSON.stringify(lastReading, null, 2)}
           </pre>
         </div>
       )}
-      <div style ={{ marginTop: 20 }}>
+      <div className="section">
         <h3>Timesheet</h3>
 
         {sessions.length === 0 ? (
@@ -268,10 +268,10 @@ const canClockInFromBreak = breakRemainingMs === 0;
           </table>
         )}
       </div>
-      <div style={{ marginTop: 20 }}>
+      <div className="section">
         <h3>Payroll</h3>
         
-        <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+        <div className="payroll-grid">
           <label>
             Hourly Rate ($)
             <br />
@@ -306,11 +306,11 @@ const canClockInFromBreak = breakRemainingMs === 0;
             />
           </label>
         </div>
-        <p style={{ marginTop: 10}}>
+        <div className="summary-box">
           <b>Total Hours Worked:</b> {hoursWorked.toFixed(2)} hours
           <br />
           <b>Estimated Pay:</b> ${estimatedPay.toFixed(2)}
-        </p>
+        </div>
       </div>
     </div>
   );
